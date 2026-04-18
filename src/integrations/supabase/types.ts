@@ -14,13 +14,367 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      content_library: {
+        Row: {
+          event_id: string | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          storage_path: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string | null
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          event_id?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          event_id?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_library_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_library_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          created_at: string
+          data_status: string | null
+          date_received: string | null
+          domicile: string | null
+          event_id: string | null
+          follow_up_status: string | null
+          id: string
+          name: string | null
+          payment_amount: number
+          profession: string | null
+          report_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_status?: string | null
+          date_received?: string | null
+          domicile?: string | null
+          event_id?: string | null
+          follow_up_status?: string | null
+          id?: string
+          name?: string | null
+          payment_amount?: number
+          profession?: string | null
+          report_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_status?: string | null
+          date_received?: string | null
+          domicile?: string | null
+          event_id?: string | null
+          follow_up_status?: string | null
+          id?: string
+          name?: string | null
+          payment_amount?: number
+          profession?: string | null
+          report_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          language: string | null
+          role_id: string | null
+          team: string | null
+          theme: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          language?: string | null
+          role_id?: string | null
+          team?: string | null
+          theme?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          language?: string | null
+          role_id?: string | null
+          team?: string | null
+          theme?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles_capacity"
+            referencedColumns: ["role_id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          event_id: string | null
+          file_name: string | null
+          file_url: string | null
+          id: string
+          notes: string | null
+          report_type: string | null
+          row_count: number | null
+          storage_path: string | null
+          team: string | null
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          event_id?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          report_type?: string | null
+          row_count?: number | null
+          storage_path?: string | null
+          team?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          event_id?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          report_type?: string | null
+          row_count?: number | null
+          storage_path?: string | null
+          team?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles_capacity: {
+        Row: {
+          can_add_task: boolean
+          created_at: string
+          current_count: number
+          display_name: string
+          id: string
+          max_capacity: number
+          role_id: string
+          team: string
+        }
+        Insert: {
+          can_add_task?: boolean
+          created_at?: string
+          current_count?: number
+          display_name: string
+          id?: string
+          max_capacity: number
+          role_id: string
+          team: string
+        }
+        Update: {
+          can_add_task?: boolean
+          created_at?: string
+          current_count?: number
+          display_name?: string
+          id?: string
+          max_capacity?: number
+          role_id?: string
+          team?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_team: string | null
+          assigned_to: string[] | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          event_id: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_team?: string | null
+          assigned_to?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_team?: string | null
+          assigned_to?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: { Args: { _user_id: string }; Returns: string }
+      get_user_team: { Args: { _user_id: string }; Returns: string }
+      user_can_add_task: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
