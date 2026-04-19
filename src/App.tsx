@@ -13,6 +13,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/Tasks";
 import Placeholder from "./pages/Placeholder";
 
 const queryClient = new QueryClient();
@@ -33,7 +34,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
 
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/tasks" element={<ProtectedRoute><Placeholder title="Tugas" /></ProtectedRoute>} />
+              <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute><Placeholder title="Laporan" /></ProtectedRoute>} />
               <Route path="/content" element={<ProtectedRoute><Placeholder title="Konten" /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Placeholder title="Pengaturan" /></ProtectedRoute>} />
