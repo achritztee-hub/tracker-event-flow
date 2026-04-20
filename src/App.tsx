@@ -15,6 +15,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import Reports from "./pages/Reports";
+import Content from "./pages/Content";
 import Placeholder from "./pages/Placeholder";
 
 const queryClient = new QueryClient();
@@ -37,7 +38,7 @@ const App = () => (
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-              <Route path="/content" element={<ProtectedRoute><Placeholder title="Konten" /></ProtectedRoute>} />
+              <Route path="/content" element={<ProtectedRoute><Content /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Placeholder title="Pengaturan" /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
