@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_campaigns: {
+        Row: {
+          campaign_name: string
+          conv_rate: number
+          cost_per_lead: number
+          cost_per_lpv: number
+          cpc: number
+          cpm: number
+          created_at: string
+          created_by: string | null
+          ctr: number
+          daily_budget: number
+          event_id: string | null
+          id: string
+          landing_page_views: number
+          leads: number
+          notes: string | null
+          oclp: number
+          platform: string
+          total_clicks: number
+          total_impressions: number
+          total_spend: number
+          updated_at: string
+        }
+        Insert: {
+          campaign_name: string
+          conv_rate?: number
+          cost_per_lead?: number
+          cost_per_lpv?: number
+          cpc?: number
+          cpm?: number
+          created_at?: string
+          created_by?: string | null
+          ctr?: number
+          daily_budget?: number
+          event_id?: string | null
+          id?: string
+          landing_page_views?: number
+          leads?: number
+          notes?: string | null
+          oclp?: number
+          platform: string
+          total_clicks?: number
+          total_impressions?: number
+          total_spend?: number
+          updated_at?: string
+        }
+        Update: {
+          campaign_name?: string
+          conv_rate?: number
+          cost_per_lead?: number
+          cost_per_lpv?: number
+          cpc?: number
+          cpm?: number
+          created_at?: string
+          created_by?: string | null
+          ctr?: number
+          daily_budget?: number
+          event_id?: string | null
+          id?: string
+          landing_page_views?: number
+          leads?: number
+          notes?: string | null
+          oclp?: number
+          platform?: string
+          total_clicks?: number
+          total_impressions?: number
+          total_spend?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_campaigns_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_library: {
         Row: {
           event_id: string | null
