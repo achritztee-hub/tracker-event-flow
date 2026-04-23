@@ -3,20 +3,24 @@ import { useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { TranslationKey } from "@/lib/i18n";
 
-const titles: Record<string, string> = {
-  "/dashboard": "Overview",
-  "/tasks": "Tugas",
-  "/reports": "Laporan",
-  "/content": "Konten",
-  "/settings": "Pengaturan",
+const titleKeys: Record<string, TranslationKey> = {
+  "/dashboard": "page.overview",
+  "/tasks": "page.tasks",
+  "/reports": "page.reports",
+  "/content": "page.content",
+  "/settings": "page.settings",
 };
 
 const AppShell = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
+  const { t, language } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const title = titles[location.pathname] ?? "Event Tracker";
-  const today = new Date().toLocaleDateString("en-US", {
+  const titleKey = titleKeys[location.pathname];
+  const title = titleKey ? t(titleKey) : "Event Tracker";
+  const today = new Date().toLocaleDateString(language === "id" ? "id-ID" : "en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
