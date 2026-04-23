@@ -2,15 +2,17 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, ListChecks, FileBarChart, Image as ImageIcon, Settings, LogOut, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { TranslationKey } from "@/lib/i18n";
 import { getInitials, teamColorClass, Team, teamLabels } from "@/lib/teams";
 import { cn } from "@/lib/utils";
 
-const nav = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { to: "/tasks", label: "Tugas", icon: ListChecks },
-  { to: "/reports", label: "Laporan", icon: FileBarChart },
-  { to: "/content", label: "Konten", icon: ImageIcon },
-  { to: "/settings", label: "Pengaturan", icon: Settings },
+const nav: { to: string; labelKey: TranslationKey; icon: typeof LayoutDashboard }[] = [
+  { to: "/dashboard", labelKey: "nav.overview", icon: LayoutDashboard },
+  { to: "/tasks", labelKey: "nav.tasks", icon: ListChecks },
+  { to: "/reports", labelKey: "nav.reports", icon: FileBarChart },
+  { to: "/content", labelKey: "nav.content", icon: ImageIcon },
+  { to: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
 interface Props {
@@ -19,8 +21,10 @@ interface Props {
 
 const Sidebar = ({ onNavigate }: Props) => {
   const { profile, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const team = (profile?.team as Team) ?? "management";
+  const avatarUrl = (profile as any)?.avatar_url as string | null | undefined;
   const roleDisplay = profile?.role_id?.split("_").map(s => s[0].toUpperCase() + s.slice(1)).join(" ") ?? "—";
 
   return (
