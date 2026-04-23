@@ -59,7 +59,7 @@ const Sidebar = ({ onNavigate }: Props) => {
             }
           >
             <item.icon className="h-4 w-4" />
-            <span>{item.label}</span>
+            <span>{t(item.labelKey)}</span>
           </NavLink>
         ))}
       </nav>
@@ -70,8 +70,8 @@ const Sidebar = ({ onNavigate }: Props) => {
           onClick={toggleTheme}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <span>{resolvedTheme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}</span>
         </button>
       </div>
 
@@ -80,11 +80,15 @@ const Sidebar = ({ onNavigate }: Props) => {
         <div className="flex items-center gap-3 rounded-lg p-2">
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white",
-              teamColorClass[team]
+              "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-semibold text-white",
+              !avatarUrl && teamColorClass[team]
             )}
           >
-            {getInitials(profile?.full_name)}
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              getInitials(profile?.full_name)
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium text-sidebar-foreground">
@@ -97,7 +101,7 @@ const Sidebar = ({ onNavigate }: Props) => {
           <button
             onClick={signOut}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground transition-colors"
-            aria-label="Sign out"
+            aria-label={t("nav.signOut")}
           >
             <LogOut className="h-4 w-4" />
           </button>
