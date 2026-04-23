@@ -10,6 +10,7 @@ export interface Profile {
   team: string | null;
   language: string | null;
   theme: string | null;
+  avatar_url: string | null;
 }
 
 interface AuthContextType {
