@@ -2,15 +2,17 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, ListChecks, FileBarChart, Image as ImageIcon, Settings, LogOut, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { TranslationKey } from "@/lib/i18n";
 import { getInitials, teamColorClass, Team, teamLabels } from "@/lib/teams";
 import { cn } from "@/lib/utils";
 
-const nav = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { to: "/tasks", label: "Tugas", icon: ListChecks },
-  { to: "/reports", label: "Laporan", icon: FileBarChart },
-  { to: "/content", label: "Konten", icon: ImageIcon },
-  { to: "/settings", label: "Pengaturan", icon: Settings },
+const nav: { to: string; labelKey: TranslationKey; icon: typeof LayoutDashboard }[] = [
+  { to: "/dashboard", labelKey: "nav.overview", icon: LayoutDashboard },
+  { to: "/tasks", labelKey: "nav.tasks", icon: ListChecks },
+  { to: "/reports", labelKey: "nav.reports", icon: FileBarChart },
+  { to: "/content", labelKey: "nav.content", icon: ImageIcon },
+  { to: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
 interface Props {
@@ -19,8 +21,10 @@ interface Props {
 
 const Sidebar = ({ onNavigate }: Props) => {
   const { profile, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const team = (profile?.team as Team) ?? "management";
+  const avatarUrl = (profile as any)?.avatar_url as string | null | undefined;
   const roleDisplay = profile?.role_id?.split("_").map(s => s[0].toUpperCase() + s.slice(1)).join(" ") ?? "—";
 
   return (
@@ -55,7 +59,7 @@ const Sidebar = ({ onNavigate }: Props) => {
             }
           >
             <item.icon className="h-4 w-4" />
-            <span>{item.label}</span>
+            <span>{t(item.labelKey)}</span>
           </NavLink>
         ))}
       </nav>
@@ -66,8 +70,8 @@ const Sidebar = ({ onNavigate }: Props) => {
           onClick={toggleTheme}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <span>{resolvedTheme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}</span>
         </button>
       </div>
 
@@ -76,11 +80,15 @@ const Sidebar = ({ onNavigate }: Props) => {
         <div className="flex items-center gap-3 rounded-lg p-2">
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white",
-              teamColorClass[team]
+              "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-semibold text-white",
+              !avatarUrl && teamColorClass[team]
             )}
           >
-            {getInitials(profile?.full_name)}
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              getInitials(profile?.full_name)
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium text-sidebar-foreground">
@@ -93,7 +101,7 @@ const Sidebar = ({ onNavigate }: Props) => {
           <button
             onClick={signOut}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground transition-colors"
-            aria-label="Sign out"
+            aria-label={t("nav.signOut")}
           >
             <LogOut className="h-4 w-4" />
           </button>
