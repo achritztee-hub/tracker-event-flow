@@ -4,6 +4,7 @@ export const translations = {
   id: {
     // Nav
     "nav.overview": "Overview",
+    "nav.events": "Event",
     "nav.tasks": "Tugas",
     "nav.reports": "Laporan",
     "nav.content": "Konten",
@@ -64,6 +65,7 @@ export const translations = {
   },
   en: {
     "nav.overview": "Overview",
+    "nav.events": "Events",
     "nav.tasks": "Tasks",
     "nav.reports": "Reports",
     "nav.content": "Content",

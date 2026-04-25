@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, ListChecks, FileBarChart, Image as ImageIcon, Settings, LogOut, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, ListChecks, FileBarChart, Image as ImageIcon, Settings, LogOut, Moon, Sun, CalendarRange } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const nav: { to: string; labelKey: TranslationKey; icon: typeof LayoutDashboard }[] = [
   { to: "/dashboard", labelKey: "nav.overview", icon: LayoutDashboard },
+  { to: "/events", labelKey: "nav.events", icon: CalendarRange },
   { to: "/tasks", labelKey: "nav.tasks", icon: ListChecks },
   { to: "/reports", labelKey: "nav.reports", icon: FileBarChart },
   { to: "/content", labelKey: "nav.content", icon: ImageIcon },

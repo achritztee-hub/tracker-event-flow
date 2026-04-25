@@ -18,6 +18,7 @@ import Tasks from "./pages/Tasks";
 import Reports from "./pages/Reports";
 import Content from "./pages/Content";
 import Settings from "./pages/Settings";
+import Events from "./pages/Events";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
                 <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
                 <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
                 <Route path="/content" element={<ProtectedRoute><Content /></ProtectedRoute>} />
