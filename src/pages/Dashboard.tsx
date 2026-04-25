@@ -154,23 +154,29 @@ const Dashboard = () => {
   const loadActivity = useCallback(async () => {
     setFeedLoading(true);
 
-    const [tasksRes, reportsRes, contentRes] = await Promise.all([
-      supabase
-        .from("tasks")
-        .select("id, title, status, updated_at, created_by")
-        .order("updated_at", { ascending: false })
-        .limit(20),
-      supabase
-        .from("reports")
-        .select("id, file_name, report_type, uploaded_at, uploaded_by")
-        .order("uploaded_at", { ascending: false })
-        .limit(20),
-      supabase
-        .from("content_library")
-        .select("id, title, uploaded_at, uploaded_by")
-        .order("uploaded_at", { ascending: false })
-        .limit(20),
-    ]);
+    let tasksQ = supabase
+      .from("tasks")
+      .select("id, title, status, updated_at, created_by, event_id")
+      .order("updated_at", { ascending: false })
+      .limit(20);
+    let reportsQ = supabase
+      .from("reports")
+      .select("id, file_name, report_type, uploaded_at, uploaded_by, event_id")
+      .order("uploaded_at", { ascending: false })
+      .limit(20);
+    let contentQ = supabase
+      .from("content_library")
+      .select("id, title, uploaded_at, uploaded_by, event_id")
+      .order("uploaded_at", { ascending: false })
+      .limit(20);
+
+    if (selectedEventId) {
+      tasksQ = tasksQ.eq("event_id", selectedEventId);
+      reportsQ = reportsQ.eq("event_id", selectedEventId);
+      contentQ = contentQ.eq("event_id", selectedEventId);
+    }
+
+    const [tasksRes, reportsRes, contentRes] = await Promise.all([tasksQ, reportsQ, contentQ]);
 
     const userIds = new Set<string>();
     tasksRes.data?.forEach((t: any) => t.created_by && userIds.add(t.created_by));
@@ -219,7 +225,7 @@ const Dashboard = () => {
 
     setActivity(items);
     setFeedLoading(false);
-  }, []);
+  }, [selectedEventId]);
 
   useEffect(() => {
     loadAll();
