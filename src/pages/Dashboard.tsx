@@ -6,6 +6,7 @@ import EventProgressCard from "@/components/dashboard/EventProgressCard";
 import ActivityFeed, { ActivityItem } from "@/components/dashboard/ActivityFeed";
 import DateRangeFilter, { DateRange, RangePreset, getRangeForPreset } from "@/components/dashboard/DateRangeFilter";
 import AddEventSheet from "@/components/dashboard/AddEventSheet";
+import EventPicker from "@/components/dashboard/EventPicker";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +44,7 @@ const Dashboard = () => {
 
   const [preset, setPreset] = useState<RangePreset>("month");
   const [range, setRange] = useState<DateRange>(() => getRangeForPreset("month"));
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<CountsState>({
     activeEvents: 0,
@@ -65,38 +67,42 @@ const Dashboard = () => {
   const loadAll = useCallback(async () => {
     setLoading(true);
 
-    // 1. Active events (status = 'active') in range (by created_at)
+    // 1. Active events count (always global, not affected by selected event)
     const { count: activeEventsCount } = await supabase
       .from("events")
       .select("*", { count: "exact", head: true })
-      .eq("status", "active")
-      .gte("created_at", fromIso)
-      .lte("created_at", toIso);
+      .eq("status", "active");
 
-    // 2. Tasks total + breakdown
-    const { data: tasksData } = await supabase
+    // 2. Tasks total + breakdown — filter by event if selected
+    let tasksQuery = supabase
       .from("tasks")
-      .select("status, created_at")
+      .select("status, created_at, event_id")
       .gte("created_at", fromIso)
       .lte("created_at", toIso);
+    if (selectedEventId) tasksQuery = tasksQuery.eq("event_id", selectedEventId);
+    const { data: tasksData } = await tasksQuery;
     const tasksByStatus = { todo: 0, in_progress: 0, done: 0 };
     (tasksData ?? []).forEach((t: any) => {
       if (t.status in tasksByStatus) tasksByStatus[t.status as keyof typeof tasksByStatus]++;
     });
 
-    // 3. Reports total
-    const { count: reportsCount } = await supabase
+    // 3. Reports total — filter by event if selected
+    let reportsCountQuery = supabase
       .from("reports")
       .select("*", { count: "exact", head: true })
       .gte("uploaded_at", fromIso)
       .lte("uploaded_at", toIso);
+    if (selectedEventId) reportsCountQuery = reportsCountQuery.eq("event_id", selectedEventId);
+    const { count: reportsCount } = await reportsCountQuery;
 
-    // 4. Leads total + hot
-    const { data: leadsData } = await supabase
+    // 4. Leads total + hot — filter by event if selected
+    let leadsQuery = supabase
       .from("leads")
-      .select("data_status, created_at")
+      .select("data_status, created_at, event_id")
       .gte("created_at", fromIso)
       .lte("created_at", toIso);
+    if (selectedEventId) leadsQuery = leadsQuery.eq("event_id", selectedEventId);
+    const { data: leadsData } = await leadsQuery;
     const leadsTotal = leadsData?.length ?? 0;
     const hotLeads = (leadsData ?? []).filter((l: any) => l.data_status === "hot").length;
 
@@ -109,12 +115,14 @@ const Dashboard = () => {
       hotLeads,
     });
 
-    // Active events list with team report progress
-    const { data: events } = await supabase
+    // Active events list with team report progress (filter to selected if any)
+    let eventsQuery = supabase
       .from("events")
       .select("id, title, status, start_date, end_date")
       .eq("status", "active")
       .order("start_date", { ascending: true });
+    if (selectedEventId) eventsQuery = eventsQuery.eq("id", selectedEventId);
+    const { data: events } = await eventsQuery;
 
     const eventIds = (events ?? []).map((e) => e.id);
     let reportsByEventTeam: Record<string, Record<string, number>> = {};
@@ -141,28 +149,34 @@ const Dashboard = () => {
     );
 
     setLoading(false);
-  }, [fromIso, toIso]);
+  }, [fromIso, toIso, selectedEventId]);
 
   const loadActivity = useCallback(async () => {
     setFeedLoading(true);
 
-    const [tasksRes, reportsRes, contentRes] = await Promise.all([
-      supabase
-        .from("tasks")
-        .select("id, title, status, updated_at, created_by")
-        .order("updated_at", { ascending: false })
-        .limit(20),
-      supabase
-        .from("reports")
-        .select("id, file_name, report_type, uploaded_at, uploaded_by")
-        .order("uploaded_at", { ascending: false })
-        .limit(20),
-      supabase
-        .from("content_library")
-        .select("id, title, uploaded_at, uploaded_by")
-        .order("uploaded_at", { ascending: false })
-        .limit(20),
-    ]);
+    let tasksQ = supabase
+      .from("tasks")
+      .select("id, title, status, updated_at, created_by, event_id")
+      .order("updated_at", { ascending: false })
+      .limit(20);
+    let reportsQ = supabase
+      .from("reports")
+      .select("id, file_name, report_type, uploaded_at, uploaded_by, event_id")
+      .order("uploaded_at", { ascending: false })
+      .limit(20);
+    let contentQ = supabase
+      .from("content_library")
+      .select("id, title, uploaded_at, uploaded_by, event_id")
+      .order("uploaded_at", { ascending: false })
+      .limit(20);
+
+    if (selectedEventId) {
+      tasksQ = tasksQ.eq("event_id", selectedEventId);
+      reportsQ = reportsQ.eq("event_id", selectedEventId);
+      contentQ = contentQ.eq("event_id", selectedEventId);
+    }
+
+    const [tasksRes, reportsRes, contentRes] = await Promise.all([tasksQ, reportsQ, contentQ]);
 
     const userIds = new Set<string>();
     tasksRes.data?.forEach((t: any) => t.created_by && userIds.add(t.created_by));
@@ -211,7 +225,7 @@ const Dashboard = () => {
 
     setActivity(items);
     setFeedLoading(false);
-  }, []);
+  }, [selectedEventId]);
 
   useEffect(() => {
     loadAll();
@@ -232,14 +246,17 @@ const Dashboard = () => {
               Pantau performa event dan tim secara real-time.
             </p>
           </div>
-          <DateRangeFilter
-            preset={preset}
-            range={range}
-            onChange={(p, r) => {
-              setPreset(p);
-              setRange(r);
-            }}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <EventPicker value={selectedEventId} onChange={setSelectedEventId} />
+            <DateRangeFilter
+              preset={preset}
+              range={range}
+              onChange={(p, r) => {
+                setPreset(p);
+                setRange(r);
+              }}
+            />
+          </div>
         </div>
 
         {/* Summary cards */}
