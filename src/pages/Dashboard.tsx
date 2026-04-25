@@ -67,38 +67,42 @@ const Dashboard = () => {
   const loadAll = useCallback(async () => {
     setLoading(true);
 
-    // 1. Active events (status = 'active') in range (by created_at)
+    // 1. Active events count (always global, not affected by selected event)
     const { count: activeEventsCount } = await supabase
       .from("events")
       .select("*", { count: "exact", head: true })
-      .eq("status", "active")
-      .gte("created_at", fromIso)
-      .lte("created_at", toIso);
+      .eq("status", "active");
 
-    // 2. Tasks total + breakdown
-    const { data: tasksData } = await supabase
+    // 2. Tasks total + breakdown — filter by event if selected
+    let tasksQuery = supabase
       .from("tasks")
-      .select("status, created_at")
+      .select("status, created_at, event_id")
       .gte("created_at", fromIso)
       .lte("created_at", toIso);
+    if (selectedEventId) tasksQuery = tasksQuery.eq("event_id", selectedEventId);
+    const { data: tasksData } = await tasksQuery;
     const tasksByStatus = { todo: 0, in_progress: 0, done: 0 };
     (tasksData ?? []).forEach((t: any) => {
       if (t.status in tasksByStatus) tasksByStatus[t.status as keyof typeof tasksByStatus]++;
     });
 
-    // 3. Reports total
-    const { count: reportsCount } = await supabase
+    // 3. Reports total — filter by event if selected
+    let reportsCountQuery = supabase
       .from("reports")
       .select("*", { count: "exact", head: true })
       .gte("uploaded_at", fromIso)
       .lte("uploaded_at", toIso);
+    if (selectedEventId) reportsCountQuery = reportsCountQuery.eq("event_id", selectedEventId);
+    const { count: reportsCount } = await reportsCountQuery;
 
-    // 4. Leads total + hot
-    const { data: leadsData } = await supabase
+    // 4. Leads total + hot — filter by event if selected
+    let leadsQuery = supabase
       .from("leads")
-      .select("data_status, created_at")
+      .select("data_status, created_at, event_id")
       .gte("created_at", fromIso)
       .lte("created_at", toIso);
+    if (selectedEventId) leadsQuery = leadsQuery.eq("event_id", selectedEventId);
+    const { data: leadsData } = await leadsQuery;
     const leadsTotal = leadsData?.length ?? 0;
     const hotLeads = (leadsData ?? []).filter((l: any) => l.data_status === "hot").length;
 
@@ -111,12 +115,14 @@ const Dashboard = () => {
       hotLeads,
     });
 
-    // Active events list with team report progress
-    const { data: events } = await supabase
+    // Active events list with team report progress (filter to selected if any)
+    let eventsQuery = supabase
       .from("events")
       .select("id, title, status, start_date, end_date")
       .eq("status", "active")
       .order("start_date", { ascending: true });
+    if (selectedEventId) eventsQuery = eventsQuery.eq("id", selectedEventId);
+    const { data: events } = await eventsQuery;
 
     const eventIds = (events ?? []).map((e) => e.id);
     let reportsByEventTeam: Record<string, Record<string, number>> = {};
@@ -143,7 +149,7 @@ const Dashboard = () => {
     );
 
     setLoading(false);
-  }, [fromIso, toIso]);
+  }, [fromIso, toIso, selectedEventId]);
 
   const loadActivity = useCallback(async () => {
     setFeedLoading(true);
