@@ -6,6 +6,7 @@ import EventProgressCard from "@/components/dashboard/EventProgressCard";
 import ActivityFeed, { ActivityItem } from "@/components/dashboard/ActivityFeed";
 import DateRangeFilter, { DateRange, RangePreset, getRangeForPreset } from "@/components/dashboard/DateRangeFilter";
 import AddEventSheet from "@/components/dashboard/AddEventSheet";
+import EventPicker from "@/components/dashboard/EventPicker";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +44,7 @@ const Dashboard = () => {
 
   const [preset, setPreset] = useState<RangePreset>("month");
   const [range, setRange] = useState<DateRange>(() => getRangeForPreset("month"));
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<CountsState>({
     activeEvents: 0,
