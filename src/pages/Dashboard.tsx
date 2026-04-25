@@ -246,14 +246,17 @@ const Dashboard = () => {
               Pantau performa event dan tim secara real-time.
             </p>
           </div>
-          <DateRangeFilter
-            preset={preset}
-            range={range}
-            onChange={(p, r) => {
-              setPreset(p);
-              setRange(r);
-            }}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <EventPicker value={selectedEventId} onChange={setSelectedEventId} />
+            <DateRangeFilter
+              preset={preset}
+              range={range}
+              onChange={(p, r) => {
+                setPreset(p);
+                setRange(r);
+              }}
+            />
+          </div>
         </div>
 
         {/* Summary cards */}
